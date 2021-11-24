@@ -1,14 +1,28 @@
 # cookiecutter specific gitignore
 
-## data
-data/raw/
+## runs specific data
+*.data
+### core-collapse module output
+cc_data/
+### different inclinations explored
+i*/
+### logger output
+log
 
 
 ## pdfs
 *.pdf
 
 
+## python module for loading MESA output
+mesa_reader.py
+
+
 # MESA specific gitignore
+
+## star models
+*.mod
+
 
 ## Compilation
 build.log

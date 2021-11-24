@@ -3,6 +3,13 @@
 
     show_log_description_at_start = .false.
 
+    ! load companion star from a previous evolution of two stars
+    ! in which the initially more massive collapsed into a compact object
+    ! and the companion is a massive companion with a previous accreting
+    ! history
+    load_saved_model = .true.
+    saved_model_name = 'companion_at_core_collapse.mod'
+
     history_columns_file = 'column_lists/history.list'
     profile_columns_file = 'column_lists/profile.list'
 
@@ -12,12 +19,12 @@
     set_cumulative_energy_error_at_step = 1
     new_cumulative_energy_error = 0d0
 
-    new_rotation_flag = .true.
-    change_initial_rotation_flag = .true.
-    relax_initial_omega_div_omega_crit = .true.
-    new_omega_div_omega_crit = 0.5d0
-    relax_omega_max_yrs_dt = 1d9
-    num_steps_to_relax_rotation = 100
+    !new_rotation_flag = .true.
+    !change_initial_rotation_flag = .true.
+    !relax_initial_omega_div_omega_crit = .true.
+    !new_omega_div_omega_crit = 0.5d0
+    !relax_omega_max_yrs_dt = 1d9
+    !num_steps_to_relax_rotation = 100
 
     change_conv_vel_flag = .true.
     change_initial_conv_vel_flag = .true.
@@ -32,15 +39,15 @@
     set_initial_model_number = .true.
     initial_model_number = 0
 
-    set_uniform_initial_composition = .true.
+    set_uniform_initial_composition = .false.
     initial_h1 = 0.7d0
     initial_h2 = 0d0
     initial_he3 = 0d0
     initial_he4 = 0.28d0
 
-    relax_initial_Z = .true.
+    relax_initial_Z = .false.
     new_Z = 0.0017
-    relax_initial_Y = .true.
+    relax_initial_Y = .false.
     new_Y = 0.2521
 
 / ! end of star_job namelist
@@ -69,10 +76,10 @@
 &controls
 
     ! inclination between star spin & orbital angular momentum
-    x_ctrl(1) = 180d0
+    x_ctrl(1) = 25d0
 
     ! set to true when using Qin+ (2018) fits to E2 of dynamical tides
-    x_logical_ctrl(1) = .true.
+    x_logical_ctrl(1) = .false.
 
     ! xa_central_lower_limit_species(1) = 'h1'
     ! xa_central_lower_limit(1) = 1d-5

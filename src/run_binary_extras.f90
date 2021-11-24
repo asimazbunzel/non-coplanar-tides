@@ -33,7 +33,6 @@
       
       implicit none
 
-      ! debugging flag
       logical, parameter :: dbg = .false.
 
       ! b% xtra(x_inclination) contains the inclination value (changing at each timestep)
@@ -56,7 +55,7 @@
       real(dp), parameter :: fi_limit = 1d-3
 
       ! minimum value for the fraction of convective envelope
-      real(dp), parameter :: min_convective_fraction = 0.1d0
+      real(dp), parameter :: min_convective_fraction = 0.2d0
       
       contains
       
@@ -148,6 +147,8 @@
          
          i_step = b% xtra(x_inclination)
          
+         !! convective_envelope = is_convective(s)
+
          ! compute gyration radius
          moment_of_inertia = dot_product(s% i_rot(:s% nz), s% dm_bar(:s% nz))
          rGyr_squared = (moment_of_inertia/(m*r_phot*r_phot))
@@ -270,13 +271,13 @@
          end if
          
          ! eq. (10) of Hut, P. 1981, A&A, 99, 126
-         edot = -27.0d0 * qratio * (1+qratio) * pow8(r_phot/osep) &
-            * b% eccentricity * pow(1-pow2(b% eccentricity), -6.5d0) * b% Ftid_1
+         edot = -27.0d0*qratio * (1+qratio) * pow8(r_phot/osep) &
+            * b% eccentricity*pow(1-pow2(b% eccentricity), -6.5d0) * b% Ftid_1
          ! add multiplication by (k/T), eq. (29) of Hurley et al. 2002
-         edot = edot * k_div_T(b, s, convective_envelope)
+         edot = edot*k_div_T(b, s, convective_envelope)
          ! add terms dependant on omega & inclination
          edot = edot * (f3(b% eccentricity) - &
-            11d0/18d0 * omega_s/omega_sync * f4(b% eccentricity) * &
+            11d0/18d0*omega_s/omega_sync*f4(b% eccentricity) * &
             pow(1-pow2(b% eccentricity), 1.5d0) * cos(i_step))
 
       end function edot_tidal_non_coplanar
@@ -327,11 +328,11 @@
          moment_of_inertia = dot_product(s% i_rot(:s% nz), s% dm_bar(:s% nz))
          rGyr_squared = (moment_of_inertia/(m*r_phot*r_phot))
 
-         idot = -3d0 * k_div_T(b, s, convective_envelope) * &
+         idot = -3d0*k_div_T(b, s, convective_envelope) * &
             (qratio*qratio/rGyr_squared) * pow6(r_phot/osep) * (omega_sync/omega_s) * &
             pow(1-pow2(b% eccentricity), -6d0) * sin(i_step)
 
-         par = f2(b% eccentricity) - 0.5d0 * f5(b% eccentricity) * &
+         par = f2(b% eccentricity) - 0.5d0*f5(b% eccentricity) * &
             ((omega_s/omega_sync) * cos(i_step) * pow(1-pow2(b% eccentricity), 1.5d0) + &
             r_phot*r_phot*osep*omega_s*omega_s*rGyr_squared * (1-pow2(b% eccentricity)) / &
             (b% m(b% a_i) * standard_cgrav))
