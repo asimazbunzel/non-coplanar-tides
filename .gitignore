@@ -1,6 +1,7 @@
 # cookiecutter specific gitignore
 
 ## runs specific data
+**/data/
 *.data
 ### core-collapse module output
 cc_data/
