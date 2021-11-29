@@ -56,6 +56,8 @@
 
       ! minimum value for the fraction of convective envelope
       real(dp), parameter :: min_convective_fraction = 0.2d0
+
+      real(dp), parameter :: max_mdot_rlof = 0.01d0
       
       contains
       
@@ -854,11 +856,13 @@
             return
          end if
 
-         ! end at beginning of MT
+         ! end at really high MT rate
          if(.false. .and. b% rl_relative_gap(b% d_i) >= 0d0) then
-            write(*,'(a)') 'reach MT phase'
-            extras_binary_finish_step = terminate
-            return
+            if (abs(b% mtransfer_rate) * secyer/Msun > max_mdot_rlof) then
+               write(*,1) 'reach max_mdot_rlof:', abs(b% mtransfer_rate) * secyer/Msun, max_mdot_rlof
+               extras_binary_finish_step = terminate
+               return
+            end if
          end if
 
          ! stop at He depletion

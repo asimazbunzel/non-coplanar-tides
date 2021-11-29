@@ -76,7 +76,7 @@
 &controls
 
     ! inclination between star spin & orbital angular momentum
-    x_ctrl(1) = 25d0
+    x_ctrl(1) = 0d0
 
     ! set to true when using Qin+ (2018) fits to E2 of dynamical tides
     x_logical_ctrl(1) = .false.

@@ -18,9 +18,9 @@
     ! based on previous star + star evolution
     m1 = 0.00  ! donor mass in Msun
     m2 = 7.3128898852228206d0  ! compact object mass in Msun
-    initial_period_in_days = 10d0
+    initial_period_in_days = 5d0  ! 279d0
     initial_separation_in_Rsuns = 0.00
-    initial_eccentricity = 0.1d0
+    initial_eccentricity = 0.2d0  ! 0.45d0
 
     history_name = 'binary_history.data'
     history_interval = 1
