@@ -61,7 +61,7 @@
 &controls
     
     ! inclination between star spin & orbital angular momentum
-    x_ctrl(1) = 0d0
+    x_ctrl(1) = 5d0
 
     xa_central_lower_limit_species(1) = 'h1'
     xa_central_lower_limit(1) = 1d-5

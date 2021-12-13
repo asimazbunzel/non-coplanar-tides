@@ -16,11 +16,11 @@
 &binary_controls
 
     ! based on previous star + star evolution
-    m1 = 0.00  ! donor mass in Msun
+    m1 = 20.452669d0  ! donor mass in Msun
     m2 = 7.3128898852228206d0  ! compact object mass in Msun
-    initial_period_in_days = 5d0  ! 279d0
+    initial_period_in_days = 3d0  ! 279d0
     initial_separation_in_Rsuns = 0.00
-    initial_eccentricity = 0.2d0  ! 0.45d0
+    initial_eccentricity = 0.1d0  ! 0.45d0
 
     history_name = 'binary_history.data'
     history_interval = 1
@@ -32,7 +32,7 @@
 
     ! mass-transfer controls
     mdot_scheme = 'Kolb'
-    limit_retention_by_mdot_edd = .true.
+    limit_retention_by_mdot_edd = .false.
 
     do_jdot_mb = .false.
     do_jdot_missing_wind = .false.
@@ -48,8 +48,8 @@
     circ_type_1 = 'Hut_conv'
     circ_type_2 = 'Hut_conv'
 
-    Ftid_1 = 50  ! set 50 for conv envelope & 1 for rad envelope
-    Ftid_2 = 50  ! set 50 for conv envelope & 1 for rad envelope
+    !! Ftid_1 = 50  ! set 50 for conv envelope & 1 for rad envelope
+    !! Ftid_2 = 50  ! set 50 for conv envelope & 1 for rad envelope
 
     use_other_sync_spin_to_orbit = .true.
     use_other_edot_tidal = .true.

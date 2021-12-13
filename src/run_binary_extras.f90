@@ -35,12 +35,18 @@
 
       logical, parameter :: dbg = .false.
 
-      ! b% xtra(x_inclination) contains the inclination value (changing at each timestep)
-      integer, parameter :: x_inclination = 1
-      ! b% xtra(x_idot) contains the derivative of the inclination
-      integer, parameter :: x_idot = 2
-      ! b% xtra(x_omega_eq) contains the value of the equilibrium spin
-      integer, parameter :: x_omega_eq = 3
+      ! b% xtra(x_inclination_1) contains the inclination value between star 1 and Jorb
+      integer, parameter :: x_inclination_1 = 1
+      ! b% xtra(x_inclination_2) contains the inclination value between star 2 and Jorb
+      integer, parameter :: x_inclination_2 = 2
+      ! b% xtra(x_inclination) contains the sum of inclination values for star 1 & 2
+      integer, parameter :: x_inclination = 3
+      ! b% xtra(x_idot_1) contains the derivative of the inclination for star 1
+      integer, parameter :: x_idot_1 = 4
+      ! b% xtra(x_idot_2) contains the derivative of the inclination for star 2
+      integer, parameter :: x_idot_2 = 5
+      ! b% xtra(x_omega_eq_1) contains the value of the equilibrium spin for star 1
+      integer, parameter :: x_omega_eq = 6
 
       ! b% lxtra(lx_convective_envelope) is true when envelope of star is convective
       integer, parameter :: lx_convective_envelope = 1
@@ -48,7 +54,8 @@
       integer, parameter :: lx_use_qin_E2 = 2
 
       ! inclination value
-      real(dp) :: initial_inclination, idot_step, di_step, i_evolve
+      real(dp) :: initial_inclination_1, initial_inclination_2
+      real(dp) :: idot_1_step, idot_2_step, di_1_step, di_2_step, i_1_evolve, i_2_evolve
       real(dp), parameter :: min_inclination = 0d0
       real(dp), parameter :: max_abs_di = 1d0
       real(dp), parameter :: fi_hard = 0.1
@@ -57,6 +64,7 @@
       ! minimum value for the fraction of convective envelope
       real(dp), parameter :: min_convective_fraction = 0.2d0
 
+      ! max limit for mass-transfer rate in Msun yr-1
       real(dp), parameter :: max_mdot_rlof = 0.01d0
       
       contains
@@ -146,11 +154,11 @@
          do k = 1, nz
             j_sync(k) = omega_orb*s% i_rot(k)
          end do
+       
+         ! use adequate inclination for the torque calculation
+         if (s% id == 1) i_step = b% xtra(x_inclination_1)
+         if (s% id == 2) i_step = b% xtra(x_inclination_2)
          
-         i_step = b% xtra(x_inclination)
-         
-         !! convective_envelope = is_convective(s)
-
          ! compute gyration radius
          moment_of_inertia = dot_product(s% i_rot(:s% nz), s% dm_bar(:s% nz))
          rGyr_squared = (moment_of_inertia/(m*r_phot*r_phot))
@@ -253,7 +261,9 @@
 
          include 'formats.inc'
          
-         i_step = b% xtra(x_inclination)
+         ! use adequate inclination for the torque calculation
+         if (s% id == 1) i_step = b% xtra(x_inclination_1)
+         if (s% id == 2) i_step = b% xtra(x_inclination_2)
 
          edot = 0d0
 
@@ -295,14 +305,17 @@
          logical :: convective_envelope
          
          include 'formats.inc'
+         
+         ! use adequate inclination for the torque calculation
+         if (s% id == 1) i_step = b% xtra(x_inclination_1)
+         if (s% id == 2) i_step = b% xtra(x_inclination_2)
 
-         if (b% doing_first_model_of_run .or. b% xtra(x_inclination) <= min_inclination) then
+         ! do not compute idot in the first timestep or when min_inclination has been reached
+         if (b% doing_first_model_of_run .or. i_step <= min_inclination) then
             idot = 0d0
             return
          end if
 
-         i_step = b% xtra(x_inclination)
-         
          porb = b% period
          omega_sync = 2d0*pi/b% period
          omega_s = s% omega_avg_surf
@@ -536,7 +549,7 @@
          use binary_def, only: binary_info
          integer, intent(in) :: binary_id
 
-         how_many_extra_binary_history_columns = 5
+         how_many_extra_binary_history_columns = 7
 
       end function how_many_extra_binary_history_columns
 
@@ -559,16 +572,19 @@
             return
          end if
 
-         names(1) = 'inclination'
-         names(2) = 'idot'
+         names(1) = 'inclination_1'
+         names(2) = 'idot_1'
+         names(3) = 'inclination_2'
+         names(4) = 'idot_2'
 
-         vals(1) = b% xtra(x_inclination) * rad2a
-         vals(2) = b% xtra(x_idot) * rad2a
-         
+         vals(1) = b% xtra(x_inclination_1) * rad2a
+         vals(2) = b% xtra(x_idot_1) * rad2a
+         vals(3) = b% xtra(x_inclination_2) * rad2a
+         vals(4) = b% xtra(x_idot_2) * rad2a
 
          ! compute circ timescale based on different energy transport on the star envelope
-         names(3) =  'lg_t_circ_1'
-         names(4) =  'lg_t_circ_2'
+         names(5) =  'lg_t_circ_1'
+         names(6) =  'lg_t_circ_2'
         
          t_circ_1 = 0d0
          if (b% have_star_1) then
@@ -578,7 +594,7 @@
                return
             end if
          end if
-         vals(3) = safe_log10(abs(t_circ_1)/secyer)
+         vals(5) = safe_log10(abs(t_circ_1)/secyer)
 
          t_circ_2 = 0d0
          if (b% have_star_2) then
@@ -588,10 +604,10 @@
                return
             end if
          end if
-         vals(4) = safe_log10(abs(t_circ_2)/secyer)
+         vals(6) = safe_log10(abs(t_circ_2)/secyer)
 
          ! Darwin unstable separation
-         names(5) = 'a_Darwin'
+         names(7) = 'a_Darwin'
 
          mu = b% m(1) * b% m(2) / (b% m(1) + b% m(2))
          I1 = 0d0
@@ -601,7 +617,7 @@
          if (b% point_mass_i /= 2) &
             I2 = I2 + dot_product(b% s1% dm_bar(1:b% s1% nz), b% s1% i_rot(1:b% s1% nz))
 
-         vals(5) = sqrt(3 * (I1 + I2) / mu) / Rsun
+         vals(7) = sqrt(3 * (I1 + I2) / mu) / Rsun
 
          
       end subroutine data_for_extra_binary_history_columns
@@ -658,27 +674,34 @@
          end if
          
          ! for now, just use it as input
-         initial_inclination = b% s1% x_ctrl(1)
+         initial_inclination_1 = 0d0
+         if (b% point_mass_i /= 1) initial_inclination_1 = b% s1% x_ctrl(1)
+         initial_inclination_2 = 0d0
+         if (b% point_mass_i /= 2) initial_inclination_2 = b% s2% x_ctrl(1)
 
          if (.not. restart) then
             b% lxtra(lx_convective_envelope) = .false.
             b% lxtra(lx_use_qin_E2) = b% s1% x_logical_ctrl(1)
-            b% xtra(x_inclination) = initial_inclination*a2rad
-            b% xtra_old(x_inclination) = initial_inclination*a2rad
-            b% xtra(x_idot) = 0d0
+            b% xtra(x_inclination_1) = initial_inclination_1 * a2rad
+            b% xtra_old(x_inclination_1) = initial_inclination_1 * a2rad
+            b% xtra(x_idot_1) = 0d0
+            b% xtra(x_inclination_2) = initial_inclination_2 * a2rad
+            b% xtra_old(x_inclination_2) = initial_inclination_2 * a2rad
+            b% xtra(x_idot_2) = 0d0
+            b% xtra(x_inclination) = 0d0
             b% xtra(x_omega_eq) = 0d0
          end if
 
          extras_binary_startup = keep_going
 
-      end function  extras_binary_startup
+      end function extras_binary_startup
      
 
       integer function extras_binary_start_step(binary_id, ierr)
          type (binary_info), pointer :: b
          integer, intent(in) :: binary_id
          integer, intent(out) :: ierr
-         real(dp) :: i_step
+         real(dp) :: i_step_1, i_step_2
          character (len = strlen) :: coplanar_type
 
          include 'formats.inc'
@@ -690,64 +713,53 @@
          
          extras_binary_start_step = keep_going
         
-         i_step = b% xtra(x_inclination)
+         i_step_1 = b% xtra(x_inclination_1)
+         i_step_2 = b% xtra(x_inclination_2)
 
          ! to update inclination based on Repetto & Nelemans (2014)
          ! first we compute di/dt
-         idot_step = 0d0
+         idot_1_step = 0d0
          if (b% point_mass_i /= 1) then
             ! convective envelope check for star 1
-            if (is_convective(b% s_donor)) then
+            if (is_convective(b% s1)) then
                b% circ_type_1 = 'Hut_conv'
                b% sync_type_1 = 'Hut_conv'
                b% Ftid_1 = 50
+               coplanar_type = 'Hut_conv'
             else
                b% circ_type_1 = 'Hut_rad'
                b% sync_type_1 = 'Hut_rad'
                b% Ftid_1 = 1
-            end if
-
-            if (b% circ_type_1 == 'Hut_conv') then
-               coplanar_type = 'Hut_conv'
-            else if (b% circ_type_1 == 'Hut_rad') then
                coplanar_type = 'Hut_rad'
-            else
-               write(*,*) 'unrecognized coplanar_type'
-               ierr = -1
-               return
             end if
-            idot_step = idot_non_coplanar(b, b% s1, coplanar_type)
+            idot_1_step = idot_non_coplanar(b, b% s1, coplanar_type)
          end if
+         idot_2_step = 0d0
          if (b% point_mass_i /= 2) then
             ! convective envelope check for star 2
-            if (is_convective(b% s_donor)) then
+            if (is_convective(b% s2)) then
                b% circ_type_2 = 'Hut_conv'
                b% sync_type_2 = 'Hut_conv'
                b% Ftid_2 = 50
+               coplanar_type = 'Hut_conv'
             else
                b% circ_type_2 = 'Hut_rad'
                b% sync_type_2 = 'Hut_rad'
                b% Ftid_2 = 1
-            end if
-
-            if (b% circ_type_2 == 'Hut_conv') then
-               coplanar_type = 'Hut_conv'
-            else if (b% circ_type_2 == 'Hut_rad') then
                coplanar_type = 'Hut_rad'
-            else
-               write(*,*) 'unrecognized coplanar_type'
-               ierr = -1
-               return
             end if
-            idot_step = idot_step + idot_non_coplanar(b, b% s2, coplanar_type)
+            idot_2_step = idot_non_coplanar(b, b% s2, coplanar_type)
          end if
          
          ! compute di in radians. use to check for retry later on
-         di_step = idot_step * b% time_step * secyer
+         di_1_step = idot_1_step * b% time_step * secyer
+         di_2_step = idot_2_step * b% time_step * secyer
 
          ! update inclination in the timestep. not saved in xtra array - yet
-         i_step = i_step + di_step
-         i_evolve =  i_step
+         i_step_1 = i_step_1 + di_1_step
+         i_1_evolve =  i_step_1
+         i_step_2 = i_step_2 + di_2_step
+         i_2_evolve =  i_step_2
          
       end function extras_binary_start_step
       
@@ -768,11 +780,21 @@
 
          extras_binary_check_model = keep_going
         
-         rel_i_change = abs(di_step / max(b% xtra(x_inclination), fi_limit))
-         if (rel_i_change > fi_hard) then
-            write(*,1) 'retry because of fi_hard limit', rel_i_change
-            extras_binary_check_model = retry
-            return
+         if (b% point_mass_i /= 1) then
+            rel_i_change = abs(di_1_step / max(b% xtra(x_inclination_1), fi_limit))
+            if (rel_i_change > fi_hard) then
+               write(*,1) 'retry because of fi_hard limit', rel_i_change
+               extras_binary_check_model = retry
+               return
+            end if
+         end if
+         if (b% point_mass_i /= 2) then
+            rel_i_change = abs(di_2_step / max(b% xtra(x_inclination_2), fi_limit))
+            if (rel_i_change > fi_hard) then
+               write(*,1) 'retry because of fi_hard limit', rel_i_change
+               extras_binary_check_model = retry
+               return
+            end if
          end if
 
          ! if (abs(di_step) * rad2a > max_abs_di)  then
@@ -782,14 +804,22 @@
          ! end if
          
          ! after checking inclination value is OK, store it in xtra array
-         b% xtra(x_idot) = idot_step
+         b% xtra(x_idot_1) = idot_1_step
+         b% xtra(x_idot_2) = idot_2_step
          
          ! be sure that we do not go beyond minimum inclination value
-         if (i_evolve < min_inclination) then
-            b% xtra(x_inclination) = min_inclination
+         if (i_1_evolve < min_inclination) then
+            b% xtra(x_inclination_1) = min_inclination
          else
-            b% xtra(x_inclination) = i_evolve
+            b% xtra(x_inclination_1) = i_1_evolve
          end if
+         if (i_2_evolve < min_inclination) then
+            b% xtra(x_inclination_2) = min_inclination
+         else
+            b% xtra(x_inclination_2) = i_2_evolve
+         end if
+
+         b% xtra(x_inclination) = b% xtra(x_inclination_1) + b% xtra(x_inclination_2)
          
       end function extras_binary_check_model
       
@@ -819,15 +849,26 @@
          b% xtra(x_omega_eq) = abs(a1/a2*omega_orb)
 
          write(*,'(a)')
-         write(*,1) 'Ftid_1', b% Ftid_1
-         write(*,1) 'idot', b% xtra(x_idot) * rad2a
-         write(*,1) 'inclination', b% xtra(x_inclination) * rad2a
          write(*,1) 'edot_tidal', b% edot_tidal
          write(*,1) 'eccentricity', b% eccentricity
-         write(*,1) 'Omega', b% s_donor% omega_avg_surf
+         write(*,1) 'inclination', b% xtra(x_inclination) * rad2a
          write(*,1) 'Omega_eq', b% xtra(x_omega_eq)
-         write(*,1) 'Omega_div_Omega_eq', b% s_donor% omega_avg_surf/b% xtra(x_omega_eq)
-         write(*,1) 'Jrot_div_Jorb', b% s_donor% total_angular_momentum/b% angular_momentum_j
+         if (b% point_mass_i /= 1) then
+            write(*,1) 'Ftid_1', b% Ftid_1
+            write(*,1) 'idot_1', b% xtra(x_idot_1) * rad2a
+            write(*,1) 'inclination_1', b% xtra(x_inclination_1) * rad2a
+            write(*,1) 'Omega_1', b% s1% omega_avg_surf
+            write(*,1) 'Omega_1_div_Omega_eq', b% s1% omega_avg_surf/b% xtra(x_omega_eq)
+            write(*,1) 'Jrot_1_div_Jorb', b% s1% total_angular_momentum/b% angular_momentum_j
+         end if
+         if (b% point_mass_i /= 2) then
+            write(*,1) 'Ftid_2', b% Ftid_2
+            write(*,1) 'idot_2', b% xtra(x_idot_2) * rad2a
+            write(*,1) 'inclination_2', b% xtra(x_inclination_2) * rad2a
+            write(*,1) 'Omega_2', b% s2% omega_avg_surf
+            write(*,1) 'Omega_2_div_Omega_eq', b% s2% omega_avg_surf/b% xtra(x_omega_eq)
+            write(*,1) 'Jrot_2_div_Jorb', b% s2% total_angular_momentum/b% angular_momentum_j
+         end if
          write(*,'(a)')
 
          ! check for Darwin unstable binary

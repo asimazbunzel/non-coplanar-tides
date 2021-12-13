@@ -7,7 +7,7 @@
     ! in which the initially more massive collapsed into a compact object
     ! and the companion is a massive companion with a previous accreting
     ! history
-    load_saved_model = .true.
+    load_saved_model = .false.
     saved_model_name = 'companion_at_core_collapse.mod'
 
     history_columns_file = 'column_lists/history.list'
@@ -19,10 +19,10 @@
     set_cumulative_energy_error_at_step = 1
     new_cumulative_energy_error = 0d0
 
-    !new_rotation_flag = .true.
-    !change_initial_rotation_flag = .true.
-    !relax_initial_omega_div_omega_crit = .true.
-    !new_omega_div_omega_crit = 0.5d0
+    new_rotation_flag = .true.
+    change_initial_rotation_flag = .true.
+    relax_initial_omega_div_omega_crit = .true.
+    new_omega_div_omega_crit = 0.5d0
     !relax_omega_max_yrs_dt = 1d9
     !num_steps_to_relax_rotation = 100
 
@@ -76,7 +76,7 @@
 &controls
 
     ! inclination between star spin & orbital angular momentum
-    x_ctrl(1) = 0d0
+    x_ctrl(1) = 10d0
 
     ! set to true when using Qin+ (2018) fits to E2 of dynamical tides
     x_logical_ctrl(1) = .false.
@@ -138,7 +138,7 @@
 
     ! mesh grid resolution
     time_delta_coeff = 1.0
-    mesh_delta_coeff = 1.0
+    mesh_delta_coeff = 0.8
     min_dq_for_xa = 1d-4
     max_dq = 0.0005
 
