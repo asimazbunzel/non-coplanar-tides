@@ -352,10 +352,10 @@
          vals(13) = s% w_div_w_crit_avg_surf
 
          names(14) = 'Omega_eq'
-         vals(14) = b% xtra(3)
+         vals(14) = b% xtra(6)
 
          names(15) = 'Omega_div_Omega_eq'
-         vals(15) = s% omega_avg_surf / b% xtra(3)
+         vals(15) = s% omega_avg_surf / b% xtra(6)
 
       end subroutine data_for_extra_history_columns
 
