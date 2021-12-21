@@ -62,7 +62,7 @@
       real(dp), parameter :: fi_limit = 1d-3
 
       ! minimum value for the fraction of convective envelope
-      real(dp), parameter :: min_convective_fraction = 0.2d0
+      real(dp), parameter :: min_convective_fraction = 0.1d0
 
       ! max limit for mass-transfer rate in Msun yr-1
       real(dp), parameter :: max_mdot_rlof = 0.01d0
@@ -384,7 +384,7 @@
          else
             m_conv = 0d0
             do k = 1, s% nz
-               if (s% m(k) / s% mstar < 0.9) exit
+               if (s% m(k) / s% mstar < 0.8) exit
                if (s% mixing_type(k) == convective_mixing) m_conv = m_conv+s% dm(k)
             end do
             f_conv = (m_conv/Msun) / s% star_mass
@@ -392,7 +392,7 @@
          
          if (f_conv > min_convective_fraction) is_convective = .true.
 
-         if (dbg) then
+         if (.true.) then
             write(*,1) 'f_conv', f_conv
             write(*,14) 'is_convective', is_convective
          end if
@@ -859,6 +859,7 @@
             write(*,1) 'inclination_1', b% xtra(x_inclination_1) * rad2a
             write(*,1) 'Omega_1', b% s1% omega_avg_surf
             write(*,1) 'Omega_1_div_Omega_eq', b% s1% omega_avg_surf/b% xtra(x_omega_eq)
+            write(*,1) 'Omega_1_div_Omega_orb', b% s1% omega_avg_surf / omega_orb
             write(*,1) 'Jrot_1_div_Jorb', b% s1% total_angular_momentum/b% angular_momentum_j
          end if
          if (b% point_mass_i /= 2) then
@@ -867,6 +868,7 @@
             write(*,1) 'inclination_2', b% xtra(x_inclination_2) * rad2a
             write(*,1) 'Omega_2', b% s2% omega_avg_surf
             write(*,1) 'Omega_2_div_Omega_eq', b% s2% omega_avg_surf/b% xtra(x_omega_eq)
+            write(*,1) 'Omega_2_div_Omega_orb', b% s2% omega_avg_surf / omega_orb
             write(*,1) 'Jrot_2_div_Jorb', b% s2% total_angular_momentum/b% angular_momentum_j
          end if
          write(*,'(a)')
