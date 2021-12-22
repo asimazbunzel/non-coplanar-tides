@@ -102,10 +102,6 @@
          hamann_wind = 0d0
          w = 0
 
-         if (b% ignore_rlof_flag) then
-            return
-         end if
-
          call eval_Vink_wind(vink_wind)
          call eval_Nieuwenhuijzen_wind(nieu_wind)
          call eval_Hamann_wind(hamann_wind)
