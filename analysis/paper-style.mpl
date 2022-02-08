@@ -39,12 +39,14 @@ ytick.direction      : inout  ## direction: in, out, or inout
 ytick.minor.visible  : True   ## visibility of minor ticks on y-axis
 
 #### LEGEND
-legend.frameon       : False     ## if True, draw the legend on a background patch
+legend.frameon       : False  ## if True, draw the legend on a background patch
 legend.fontsize      : 8.0
+legend.handlelength  : 2.0    ## the length of the legend lines
+legend.handleheight  : 0.7    ## the height of the legend handle
 legend.borderpad     : 0.4
-legend.labelspacing  : 0.4
-legend.handletextpad : 0.5
-legend.columnspacing : 0.5
+legend.labelspacing  : 0.2
+legend.handletextpad : 0.8
+legend.columnspacing : 0.7
 
 #### FIGURE
 ## See http://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure
@@ -57,4 +59,3 @@ figure.dpi           : 300
 ## background white
 savefig.dpi         : figure
 savefig.format      : pdf
-savefig.directory   : ~/plots
