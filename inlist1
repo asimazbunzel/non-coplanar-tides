@@ -12,7 +12,7 @@
     new_rotation_flag = .true.
     change_initial_rotation_flag = .true.
     relax_initial_omega_div_omega_crit = .true.
-    new_omega_div_omega_crit = 0.9d0
+    new_omega_div_omega_crit = 0.1d0
 
     change_conv_vel_flag = .true.
     change_initial_conv_vel_flag = .true.
@@ -34,9 +34,9 @@
     initial_he4 = 0.28d0
 
     relax_initial_Z = .false.
-    new_Z = 0.017d0 !! 0.0017
+    new_Z = 0.017d0
     relax_initial_Y = .false.
-    new_Y = 0.28d0  !! 0.2521
+    new_Y = 0.28d0
 
 / ! end of star_job namelist
 
@@ -56,7 +56,7 @@
     ! kap options
     ! see kap/defaults/kap.defaults
     use_Type2_opacities = .true.
-    Zbase = 0.017d0  !! 0.0017
+    Zbase = 0.017d0
 
 / ! end of kap namelist
 
@@ -64,19 +64,19 @@
 &controls
 
     ! inclination between star spin & orbital angular momentum
-    x_ctrl(1) = 120d0
+    x_ctrl(1) = 0d0
 
     ! set to true when using Qin+ (2018) fits to E2 of dynamical tides
     x_logical_ctrl(1) = .false.
 
     ! Repetto et al. (2014) end condition
-    xa_central_lower_limit_species(1) = 'h1'
+    xa_central_lower_limit_species(1) = 'he4'
     xa_central_lower_limit(1) = 1d-5
 
     ! Rodriguez et al. (2021) end condition
-    ! max_age = 4.7d6
+    !! max_age = 4.4d6
 
-    max_model_number = 868  ! 25000
+    max_model_number = 25000
 
     report_solver_progress = .false.
     report_ierr = .false.
@@ -84,16 +84,16 @@
     redo_limit = -1
 
     ! wind options implemented as in Brott et al. 2011
-    use_other_wind = .false.
+    use_other_wind = .True.
 
     ! low-mass star winds
-    cool_wind_full_on_T = 9.99d9
-    hot_wind_full_on_T = 1d10
-    cool_wind_RGB_scheme = 'Reimers'
-    cool_wind_AGB_scheme = 'Blocker'
-    RGB_to_AGB_wind_switch = 1d-4
-    Reimers_scaling_factor = 0.8d0
-    Blocker_scaling_factor = 0.7d0 ! 0.8d0
+    !!cool_wind_full_on_T = 9.99d9
+    !!hot_wind_full_on_T = 1d10
+    !!cool_wind_RGB_scheme = 'Reimers'
+    !!cool_wind_AGB_scheme = 'Blocker'
+    !!RGB_to_AGB_wind_switch = 1d-4
+    !!Reimers_scaling_factor = 0.8d0
+    !!Blocker_scaling_factor = 0.7d0 ! 0.8d0
 
     ! close to critical rotation, use implicit wind
     max_mdot_redo_cnt = 100
@@ -154,9 +154,9 @@
     !! ignore_too_large_correction = .true.
     !! make_gradr_sticky_in_solver_iters = .true.
 
-    !! okay_to_reduce_gradT_excess = .true.
-    !! gradT_excess_age_fraction = 0.99d0
-    !! gradT_excess_max_change = 0.001d0
+    okay_to_reduce_gradT_excess = .true.
+    gradT_excess_age_fraction = 0.99d0
+    gradT_excess_max_change = 0.001d0
 
     !screening_mode = 'chugunov'
 
@@ -165,18 +165,17 @@
 
     ! mixing
     mixing_length_alpha = 1.5d0
-    !! MLT_option = 'Henyey'
     use_Ledoux_criterion = .true.
     alpha_semiconvection = 1d0
     thermohaline_coeff = 1d0
 
     ! overshooting as in Brott+ 2011
-    !! overshoot_scheme(1) = 'step'
-    !! overshoot_zone_type(1) = 'burn_H'
-    !! overshoot_zone_loc(1) = 'core'
-    !! overshoot_bdy_loc(1) = 'top'
-    !! overshoot_f(1) = 0.345
-    !! overshoot_f0(1) = 0.01
+    overshoot_scheme(1) = 'step'
+    overshoot_zone_type(1) = 'burn_H'
+    overshoot_zone_loc(1) = 'core'
+    overshoot_bdy_loc(1) = 'top'
+    overshoot_f(1) = 0.345
+    overshoot_f0(1) = 0.01
 
     ! rotation
     fitted_fp_ft_i_rot = .true.
