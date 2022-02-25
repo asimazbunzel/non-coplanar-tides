@@ -10,6 +10,8 @@
 
     evolve_both_stars = .false.
 
+    ! this is to avoid some un-wanted MT changes for reproducing
+    ! Rodriguez et al.
     !! change_ignore_rlof_flag = .true.
     !! new_ignore_rlof_flag = .true.
 

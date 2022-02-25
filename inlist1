@@ -12,6 +12,8 @@
     new_rotation_flag = .true.
     change_initial_rotation_flag = .true.
     relax_initial_omega_div_omega_crit = .true.
+
+    ! low rotation rate case
     new_omega_div_omega_crit = 0.1d0
 
     change_conv_vel_flag = .true.
@@ -84,7 +86,7 @@
     redo_limit = -1
 
     ! wind options implemented as in Brott et al. 2011
-    use_other_wind = .True.
+    use_other_wind = .true.
 
     ! low-mass star winds
     !!cool_wind_full_on_T = 9.99d9
