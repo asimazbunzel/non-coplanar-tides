@@ -41,7 +41,7 @@ ytick.minor.visible  : True   ## visibility of minor ticks on y-axis
 #### LEGEND
 legend.frameon       : False  ## if True, draw the legend on a background patch
 legend.fontsize      : 8.0
-legend.handlelength  : 2.0    ## the length of the legend lines
+legend.handlelength  : 1.65   ## the length of the legend lines
 legend.handleheight  : 0.7    ## the height of the legend handle
 legend.borderpad     : 0.4
 legend.labelspacing  : 0.2
