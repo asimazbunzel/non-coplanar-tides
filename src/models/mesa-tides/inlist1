@@ -1,0 +1,213 @@
+
+&star_job
+
+    show_log_description_at_start = .false.
+
+    history_columns_file = 'column_lists/history.list'
+    profile_columns_file = 'column_lists/profile.list'
+
+    pgstar_flag = .true.
+    disable_pgstar_for_relax = .true.
+
+    new_rotation_flag = .true.
+    change_initial_rotation_flag = .true.
+    relax_initial_omega_div_omega_crit = .true.
+
+    ! low rotation rate case
+    new_omega_div_omega_crit = 0.1d0
+
+    change_conv_vel_flag = .true.
+    change_initial_conv_vel_flag = .true.
+    new_conv_vel_flag = .true.
+
+    change_w_div_wc_flag = .true.
+    change_initial_w_div_wc_flag = .true.
+    new_w_div_wc_flag = .true.
+
+    set_initial_age = .true.
+    initial_age = 0
+    set_initial_model_number = .true.
+    initial_model_number = 0
+
+    set_uniform_initial_composition = .false.
+    initial_h1 = 0.7d0
+    initial_h2 = 0d0
+    initial_he3 = 0d0
+    initial_he4 = 0.28d0
+
+    relax_initial_Z = .false.
+    new_Z = 0.017d0
+    relax_initial_Y = .false.
+    new_Y = 0.28d0
+
+/ ! end of star_job namelist
+
+
+&eos
+
+    !logRho_min_for_all_OPAL = -9.5d0
+	 !logRho_min_for_any_OPAL = -9.6d0
+    !logRho_max_for_all_PTEH = 2.92d0
+    !logRho_max_for_any_PTEH = 3.52d0
+
+/ ! end of eos namelist
+
+
+&kap
+
+    ! kap options
+    ! see kap/defaults/kap.defaults
+    use_Type2_opacities = .true.
+    Zbase = 0.017d0
+
+/ ! end of kap namelist
+
+
+&controls
+
+    ! inclination between star spin & orbital angular momentum
+    x_ctrl(1) = 0d0
+
+    ! set to true when using Qin+ (2018) fits to E2 of dynamical tides
+    x_logical_ctrl(1) = .false.
+
+    ! Repetto et al. (2014) end condition
+    xa_central_lower_limit_species(1) = 'he4'
+    xa_central_lower_limit(1) = 1d-5
+
+    ! Rodriguez et al. (2021) end condition
+    !! max_age = 4.4d6
+
+    max_model_number = 25000
+
+    report_solver_progress = .false.
+    report_ierr = .false.
+
+    redo_limit = -1
+
+    ! wind options implemented as in Brott et al. 2011
+    use_other_wind = .true.
+
+    ! low-mass star winds
+    !!cool_wind_full_on_T = 9.99d9
+    !!hot_wind_full_on_T = 1d10
+    !!cool_wind_RGB_scheme = 'Reimers'
+    !!cool_wind_AGB_scheme = 'Blocker'
+    !!RGB_to_AGB_wind_switch = 1d-4
+    !!Reimers_scaling_factor = 0.8d0
+    !!Blocker_scaling_factor = 0.7d0 ! 0.8d0
+
+    ! close to critical rotation, use implicit wind
+    max_mdot_redo_cnt = 100
+    min_years_dt_for_redo_mdot = 0
+    surf_w_div_w_crit_limit = 0.98d0
+    surf_w_div_w_crit_tol = 0.001d0
+    rotational_mdot_boost_fac = 1d10
+    rotational_mdot_kh_fac = 1d10
+    mdot_revise_factor = 1.2
+    implicit_mdot_boost = 0.1
+    surf_avg_tau_min = 0
+    surf_avg_tau = 10
+
+    ! atmosphere
+    atm_option = 'T_tau'
+    atm_T_tau_relation = 'Eddington'
+    atm_T_tau_opacity = 'fixed'
+
+    ! io controls
+    history_interval = 1
+    write_profiles_flag = .false.
+
+    ! timesteps
+    delta_lgTeff_limit = 0.05d0
+    delta_lgTeff_hard_limit = 0.1d0
+    delta_lgRho_cntr_limit = 0.03
+    delta_lgRho_limit = 0.1
+    delta_lgT_max_limit = 0.001
+    delta_lgT_max_hard_limit = 0.01
+    dHe_div_He_limit = -1
+    delta_lgL_He_limit = 0.1
+    delta_lg_XH_cntr_limit = 0.01d0
+    delta_lg_XH_cntr_max = 0.0d0
+    delta_lg_XH_cntr_min = -4.0d0
+    delta_lg_XH_cntr_hard_limit = 0.02d0
+    dX_nuc_drop_limit = 8d-3
+    dX_nuc_drop_min_X_limit = 1d-3
+    dX_nuc_drop_max_A_limit = 52
+
+    ! limit on changes in timestep
+    min_timestep_factor = 0.8
+    max_timestep_factor = 1.05
+    timestep_factor_for_retries = 0.75
+
+    min_J_div_delta_J = 50d0
+
+    ! mesh grid resolution
+    time_delta_coeff = 1.0
+    mesh_delta_coeff = 0.8
+    min_dq_for_xa = 1d-4
+    max_dq = 0.0005
+
+    ! solver
+    !! use_dedt_form_of_energy_eqn = .true.
+    !! solver_iters_timestep_limit = 10
+    !! use_gold2_tolerances = .true.
+    !! convergence_ignore_equL_residuals = .true.
+    !! ignore_too_large_correction = .true.
+    !! make_gradr_sticky_in_solver_iters = .true.
+
+    okay_to_reduce_gradT_excess = .true.
+    gradT_excess_age_fraction = 0.99d0
+    gradT_excess_max_change = 0.001d0
+
+    !screening_mode = 'chugunov'
+
+    !! scale_max_correction = 0.05d0  !! 0.1
+    !! ignore_species_in_max_correction = .true.
+
+    ! mixing
+    mixing_length_alpha = 1.5d0
+    use_Ledoux_criterion = .true.
+    alpha_semiconvection = 1d0
+    thermohaline_coeff = 1d0
+
+    ! overshooting as in Brott+ 2011
+    overshoot_scheme(1) = 'step'
+    overshoot_zone_type(1) = 'burn_H'
+    overshoot_zone_loc(1) = 'core'
+    overshoot_bdy_loc(1) = 'top'
+    overshoot_f(1) = 0.345
+    overshoot_f0(1) = 0.01
+
+    ! rotation
+    fitted_fp_ft_i_rot = .true.
+    w_div_wcrit_max = 0.9d0
+    am_nu_ST_factor = 1.0
+    D_visc_factor = 0.0
+    am_nu_SH_factor = 0.0
+    D_ST_factor = 0.0
+    D_SH_factor = 0.0
+    D_GSF_factor = 1.0
+    D_ES_factor = 1.0
+    D_SSI_factor = 1.0
+    D_DSI_factor = 1.0
+    am_D_mix_factor = 0.0333333d0
+    am_gradmu_factor = 0.1d0
+    num_cells_for_smooth_gradL_composition_term = 2
+    premix_omega = .true.
+    remove_small_D_limit = 1d-10
+    mixing_D_limit_for_log = 1d-10
+    ! this is to avoid odd behaviour when a star switches from accreting to mass losing
+    max_mdot_jump_for_rotation = 1d99
+
+/ ! end of controls namelist
+
+
+&pgstar
+
+   read_extra_pgstar_inlist1 = .true.
+   extra_pgstar_inlist1_name = 'inlist_pgstar'
+
+   Grid1_file_prefix = 'donor_'
+
+/ ! end of pgstar namelist
