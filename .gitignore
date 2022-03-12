@@ -13,6 +13,9 @@ log
 ## SVG pictures also removed
 *.svg
 
+## stuff inside paper folder not shown fow now
+reports/paper
+
 
 ## pdfs
 *.pdf
