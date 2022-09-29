@@ -80,8 +80,6 @@
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
-         call binary_ptr(s% binary_id, b, ierr)
-         if (ierr /= 0) return
 
          L1 = Lsurf
          M1 = Msurf
